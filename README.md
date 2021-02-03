@@ -12,11 +12,11 @@ This vulnerability happen when tddpd server receive data by usinng recvfrom `udp
 
 ![](./poc.png)
 
-## poc
+## POC
 
 Refer to this video: [poc_video](./poc.mkv)
 
-**poc**
+**EXP**
 
 ```
 #!/usr/bin/env python
