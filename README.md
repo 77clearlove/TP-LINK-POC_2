@@ -1,8 +1,8 @@
 # TP-LINK-POC_2
 
-TP-Link router have a stack overflow in tddpd server via port 20002.
+TP-Link router have a stack overflow in tddpd server running via port 20002.
 
-Any user can get remote code execution through LAN, this vulnerability currently affects latest WR、WDR series, including WDR7400,WDR7500,WDR7660,WDR7800, WDR8400,WDR8500,WDR8600,WDR8620,WDR8640,WDR8660,WR880N,WR886N,WR890N,WR890N,WR882N,WR708N,WR842N,WR802N,WR710N,WR706N,WR702N etc. It affects the linux system and vxworks system. we believe there are much more models suffered from this vuln.
+Any user can get remote code execution through LAN, this vulnerability currently affects the latest versions of WR、WDR series, which include WDR7400,WDR7500,WDR7660,WDR7800, WDR8400,WDR8500,WDR8600,WDR8620,WDR8640,WDR8660,WR880N,WR886N,WR890N,WR890N,WR882N,WR708N,WR842N,WR802N,WR710N,WR706N,WR702N etc. It affects the linux system and vxworks system. we believe there are much more models suffered from this vuln.
 
 ## Vulnerability description 
 
